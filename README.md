@@ -13,5 +13,4 @@ https://github.com/mikhailgarber/maos/blob/master/src/test/java/mg/maos/StorageT
 
 Mikhail Garber
 
-https://plus.google.com/117071755921589242651/posts
-
+http://google.com/profiles/mikhail.garber
