@@ -9,6 +9,8 @@ It supports: basic Create-Read-Update-Delete (including bulk), search with multi
 
 See StorageTest.java in tests for details on how to use it.
 
+https://github.com/mikhailgarber/maos/blob/master/src/test/java/mg/maos/StorageTest.java
+
 Mikhail Garber
 
 https://plus.google.com/117071755921589242651/posts
