@@ -1,0 +1,2 @@
+This software is provided under GNU Lesser General Public Licence version 3
+http://www.gnu.org/licenses/lgpl.html
