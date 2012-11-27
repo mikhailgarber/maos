@@ -25,19 +25,19 @@ public class SearchResult {
 		this.total = total;
 	}
 
-	protected int getHowmany() {
+	public int getHowmany() {
 		return howmany;
 	}
 
-	protected int getOffset() {
+	public int getOffset() {
 		return offset;
 	}
 
-	protected List<StoredObject> getResults() {
+	public List<StoredObject> getResults() {
 		return Collections.unmodifiableList(results);
 	}
 
-	protected Map<String, List<FacetCondition>> getFacets() {
+	public Map<String, List<FacetCondition>> getFacets() {
 		return Collections.unmodifiableMap(facets);
 	}
 
