@@ -7,23 +7,25 @@ import java.util.Map;
 import java.util.Set;
 
 public class ObjectAttributes {
-	
-	
-	
+
 	private Map<String, Object> values = new HashMap<String, Object>();
 	private Set<String> facets = new HashSet<String>();
-	
+
 	public ObjectAttributes add(String name, Object value) {
 		return add(name, value, false);
 	}
-	
+
 	public ObjectAttributes add(String name, Object value, boolean facet) {
-		ObjectTypes.validateType(value, facet);
-		values.put(name, value);
-		if(facet) facets.add(name);
+		if (value != null) {
+			ObjectTypes.validateType(value, facet);
+			values.put(name, value);
+			if (facet) {
+				facets.add(name);
+			}
+		}
 		return this;
 	}
-	
+
 	public void remove(String name) {
 		values.remove(name);
 		facets.remove(name);
@@ -46,8 +48,4 @@ public class ObjectAttributes {
 		return Collections.unmodifiableSet(facets);
 	}
 
-	
-	
-	
-	
 }
