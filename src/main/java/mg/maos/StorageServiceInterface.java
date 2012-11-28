@@ -16,4 +16,5 @@ public interface StorageServiceInterface {
 	public SearchResult find(SearchRequest search);
 	public void delete(SearchFilter ... filters);
 	public boolean isFacetEnabled();
+	public int getCount();
 }

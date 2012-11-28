@@ -121,11 +121,17 @@ public class StorageTest {
 	@Test
 	public void testFind() throws ParseException {
 		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory());
+		Assert.assertEquals(0, storage.getCount());
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		addPlace(storage, "Seattle", sdf.parse("2006/04/20"), 1224354L, 23.7);
 		addPlace(storage, "Frankfurt", sdf.parse("1996/01/06"), 7224354L, 33.7);
 		addPlace(storage, "Detroit", sdf.parse("1992/03/17"), 224354L, 43.7);
 		addPlace(storage, "Dallas", sdf.parse("1994/08/21"), 7224354L, 73.7);
+		
+		// four doc total
+		Assert.assertEquals(4, storage.getCount());
+		
 		// exact match of one field
 		SearchResult results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle", OPERATION.EQ)));
 		Assert.assertEquals(1, results.getResults().size());

@@ -25,6 +25,7 @@ import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -54,7 +55,7 @@ public class LuceneStorage implements StorageServiceInterface {
 	private final String TYPE_SUFFIX = "dfgdsgdg";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final int MAX_PAGE_SIZE = 500;
-	
+
 	private QueryParser parser = new QueryParser(Version.LUCENE_36, SearchCondition.DEFAULT_FIELD, new StandardAnalyzer(Version.LUCENE_36));
 
 	@Override
@@ -91,7 +92,7 @@ public class LuceneStorage implements StorageServiceInterface {
 
 		CategoryDocumentBuilder b = new CategoryDocumentBuilder(taxoWriter);
 		b.setCategoryPaths(cats).build(doc);
-		
+
 	}
 
 	private Object doWithWriter(ActionInterface action) {
@@ -123,6 +124,9 @@ public class LuceneStorage implements StorageServiceInterface {
 			taxoReader = getTaxoReader();
 			return action.proceed(searcher, taxoReader);
 		} catch (Exception e) {
+			if (e instanceof IndexNotFoundException) {
+				return null;
+			}
 			throw new RuntimeException(e);
 		} finally {
 			try {
@@ -229,10 +233,9 @@ public class LuceneStorage implements StorageServiceInterface {
 
 	}
 
-	
 	private SearchResult doFind(final int offset, final int howmany, final SortCondition sort, List<SearchFilter> filters, final List<FacetCondition> facets) {
 		final String query = buildQuery(filters);
-		return (SearchResult) doWithSearcher(new ActionInterface() {
+		SearchResult result =  (SearchResult) doWithSearcher(new ActionInterface() {
 
 			public Object proceed(Object... args) throws Exception {
 				IndexSearcher searcher = (IndexSearcher) args[0];
@@ -240,6 +243,11 @@ public class LuceneStorage implements StorageServiceInterface {
 				return doSearch(offset, howmany, query, searcher, getSort(sort), taxoReader, facets);
 			}
 		});
+		if(result == null) {
+			return new SearchResult(howmany, offset, new ArrayList<StoredObject>(), new HashMap<String, List<FacetCondition>>(), 0L);
+		} else {
+			return result;
+		}
 	}
 
 	protected FacetSearchParams getFacets(List<FacetCondition> facets) {
@@ -277,14 +285,14 @@ public class LuceneStorage implements StorageServiceInterface {
 	}
 
 	private SearchResult doSearch(int offset, int howmany, final String query, IndexSearcher searcher, Sort sort, TaxonomyReader taxoReader, List<FacetCondition> facets) throws ParseException, IOException {
-		if(offset + howmany > MAX_PAGE_SIZE) throw new IllegalArgumentException("too many results are requested");
+
 		FacetSearchParams facetParams = getFacets(facets);
 		logger.info("query:" + query);
 		Query q = parser.parse(query);
-		logger.info("PARSED " + q);
+		
 
 		TopFieldCollector topCollector = TopFieldCollector.create(sort, offset + howmany, true, false, true, true);
-		
+
 		List<FacetResult> facetResults = null;
 		if (facetParams != null) {
 			IndexReader reader = searcher.getIndexReader();
@@ -318,6 +326,7 @@ public class LuceneStorage implements StorageServiceInterface {
 				}
 			}
 
+		logger.info("results:" + result.size());
 		return new SearchResult(howmany, offset, result, facetResult, topCollector.getTotalHits());
 
 	}
@@ -391,14 +400,14 @@ public class LuceneStorage implements StorageServiceInterface {
 			public Object proceed(final Object... args) throws Exception {
 				final IndexWriter writer = (IndexWriter) args[0];
 				final TaxonomyWriter taxoWriter = (TaxonomyWriter) args[1];
-				return addDocuments(attributes, writer, taxoWriter);				
+				return addDocuments(attributes, writer, taxoWriter);
 			}
 		});
 	}
 
 	protected List<StoredObject> addDocuments(ObjectAttributes[] attributes, IndexWriter writer, TaxonomyWriter taxoWriter) throws CorruptIndexException, IOException {
 		List<StoredObject> result = new ArrayList<StoredObject>();
-		for(ObjectAttributes attr : attributes) {
+		for (ObjectAttributes attr : attributes) {
 			StoredObject so = new StoredObject(UUID.randomUUID().toString());
 			addDocument(attr, writer, taxoWriter, so);
 			result.add(so);
@@ -413,19 +422,37 @@ public class LuceneStorage implements StorageServiceInterface {
 			public Object proceed(Object... args) throws Exception {
 				IndexWriter writer = (IndexWriter) args[0];
 				TaxonomyWriter taxoWriter = (TaxonomyWriter) args[1];
-				for(StoredObject so : sos) {
+				for (StoredObject so : sos) {
 					updateOne(so, writer, taxoWriter);
 				}
 				return null;
 			}
 		});
-		
+
 	}
 
 	private void updateOne(final StoredObject so, IndexWriter writer, TaxonomyWriter taxoWriter) throws CorruptIndexException, IOException, ParseException {
 		deleteOne(so.getId(), writer);
 		addDocument(so.getAttributes(), writer, taxoWriter, so);
 		writer.addDocument(toDocument(so));
+	}
+
+	@Override
+	public int getCount() {
+
+		Integer result = (Integer) doWithSearcher(new ActionInterface() {
+
+			@Override
+			public Object proceed(Object... args) throws Exception {
+				IndexSearcher searcher = (IndexSearcher) args[0];
+				return searcher.getIndexReader().numDocs();
+			}
+		});
+		if (result == null) {
+			return 0;
+		} else {
+			return result;
+		}
 	}
 
 }
