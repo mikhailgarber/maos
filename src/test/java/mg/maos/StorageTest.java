@@ -1,5 +1,6 @@
 package mg.maos;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +9,8 @@ import java.util.List;
 import mg.maos.SearchCondition.OPERATION;
 
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -118,10 +121,21 @@ public class StorageTest {
 		System.out.println("fscets:" + results.getFacets());
 	}
 	
+	@After
+	public void after() {
+		deleteDir(getTestDirLocation());
+	}
+	
+	
 	@Test
-	public void testFind() throws ParseException {
-		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory());
+	public void testFind() throws Exception {
+		StorageServiceInterface storage = new LuceneStorage(new SimpleFSDirectory(getTestDirLocation()));
+		
+		// empty directory
 		Assert.assertEquals(0, storage.getCount());
+		
+		SearchResult results = storage.find();
+		Assert.assertEquals(0, results.getResults().size());
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		addPlace(storage, "Seattle", sdf.parse("2006/04/20"), 1224354L, 23.7);
@@ -133,7 +147,7 @@ public class StorageTest {
 		Assert.assertEquals(4, storage.getCount());
 		
 		// exact match of one field
-		SearchResult results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle", OPERATION.EQ)));
+		results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle", OPERATION.EQ)));
 		Assert.assertEquals(1, results.getResults().size());
 		// OR of two filters, search with out operation specified
 		results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle")), new SearchFilter().add(new SearchCondition("Name", "Frankfurt", OPERATION.EQ)));
@@ -217,6 +231,19 @@ public class StorageTest {
 		results = storage.find(new SearchFilter().add(new SearchCondition(7224354L)));
 		Assert.assertEquals(0, results.getResults().size());
 		
+	}
+
+	private File getTestDirLocation() {
+		return new File(System.getProperty("temp.dir") + "/dir");
+	}
+	
+	private void deleteDir(File dir) {
+		if(dir.isDirectory()) {
+			for(File f : dir.listFiles()) {
+				deleteDir(f);
+			}
+		}
+		dir.delete();
 	}
 
 	private void addPlace(StorageServiceInterface storage, String name, Date visited, Long population, Double distance) {

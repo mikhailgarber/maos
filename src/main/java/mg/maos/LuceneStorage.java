@@ -41,6 +41,7 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.NoSuchDirectoryException;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,6 +126,9 @@ public class LuceneStorage implements StorageServiceInterface {
 			return action.proceed(searcher, taxoReader);
 		} catch (Exception e) {
 			if (e instanceof IndexNotFoundException) {
+				return null;
+			}
+			if( e instanceof NoSuchDirectoryException) {
 				return null;
 			}
 			throw new RuntimeException(e);
