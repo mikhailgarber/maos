@@ -45,7 +45,9 @@ public class StorageTest {
 	public void testCRUD() {
 
 		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory());
+		Assert.assertEquals(0, storage.getCount());
 
+		
 		ObjectAttributes attrs = new ObjectAttributes();
 		attrs.add("Name", "Mikhail Garber");
 		attrs.add("Age", new Long(43));
@@ -54,6 +56,8 @@ public class StorageTest {
 		attrs.add("Now", now);
 		StoredObject so = storage.create(attrs);
 		Assert.assertNotNull(so);
+		Assert.assertEquals(1, storage.getCount());
+
 
 		StoredObject copy = storage.get(so.getId());
 		Assert.assertNotNull(copy);
@@ -84,6 +88,7 @@ public class StorageTest {
 
 		copy = storage.get(so.getId());
 		Assert.assertNull(copy);
+		Assert.assertEquals(0, storage.getCount());
 
 	}
 
