@@ -142,11 +142,17 @@ public class StorageTest {
 		SearchResult results = storage.find();
 		Assert.assertEquals(0, results.getResults().size());
 		
+		storage.find(new SearchFilter());
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		addPlace(storage, "Seattle", sdf.parse("2006/04/20"), 1224354L, 23.7);
 		addPlace(storage, "Frankfurt", sdf.parse("1996/01/06"), 7224354L, 33.7);
 		addPlace(storage, "Detroit", sdf.parse("1992/03/17"), 224354L, 43.7);
 		addPlace(storage, "Dallas", sdf.parse("1994/08/21"), 7224354L, 73.7);
+		
+		
+		results = storage.find(new SearchFilter());
+		Assert.assertEquals(4, storage.getCount());
 		
 		// four doc total
 		Assert.assertEquals(4, storage.getCount());

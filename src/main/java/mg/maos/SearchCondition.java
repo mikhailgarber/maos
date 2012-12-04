@@ -60,5 +60,12 @@ public class SearchCondition {
 		}
 		return sb.toString();
 	}
+
+	@Override
+	public String toString() {
+		return "SearchCondition [name=" + name + ", value=" + value + ", operation=" + operation + "]";
+	}
+	
+	
 }
 

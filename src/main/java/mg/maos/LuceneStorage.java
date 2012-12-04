@@ -271,8 +271,12 @@ public class LuceneStorage implements StorageServiceInterface {
 	}
 
 	private String buildQuery(List<SearchFilter> filters) {
+		
 		StringBuffer sb = new StringBuffer();
 		for (SearchFilter filter : filters) {
+			if(filter.isEmpty()) {
+				continue;
+			}
 			if (sb.length() > 0)
 				sb.append(" OR ");
 			sb.append("(").append(filter.toQuery()).append(")");

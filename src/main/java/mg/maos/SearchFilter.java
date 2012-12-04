@@ -22,4 +22,14 @@ public class SearchFilter {
 		}
 		return sb.toString();
 	}
+	
+	public boolean isEmpty() {
+		return conditions.isEmpty();
+	}
+	@Override
+	public String toString() {
+		return "SearchFilter [conditions=" + conditions + "]";
+	}
+	
+	
 }
