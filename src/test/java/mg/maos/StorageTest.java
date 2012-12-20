@@ -160,6 +160,10 @@ public class StorageTest {
 		// exact match of one field
 		results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle", OPERATION.EQ)));
 		Assert.assertEquals(1, results.getResults().size());
+		
+		results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seatt", OPERATION.LIKE)));
+		Assert.assertEquals(1, results.getResults().size());
+		
 		// OR of two filters, search with out operation specified
 		results = storage.find(new SearchFilter().add(new SearchCondition("Name", "Seattle")), new SearchFilter().add(new SearchCondition("Name", "Frankfurt", OPERATION.EQ)));
 		Assert.assertEquals(2, results.getResults().size());

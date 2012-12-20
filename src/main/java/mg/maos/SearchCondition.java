@@ -2,7 +2,7 @@ package mg.maos;
 
 public class SearchCondition {
 
-	public enum OPERATION {EQ, LT, LE, GT, GE, NEQ};
+	public enum OPERATION {EQ, LT, LE, GT, GE, NEQ, LIKE};
 	
 	private final String name;
 	private final Object value;
@@ -44,6 +44,9 @@ public class SearchCondition {
 		switch(operation) {
 		case EQ:
 			sb.append(":\"").append(ObjectTypes.toStorable(value)).append("\"");
+			break;
+		case LIKE:
+			sb.append(":").append(ObjectTypes.toStorable(value)).append("*");
 			break;
 		case LT:
 			sb.append(":{* TO \"").append(ObjectTypes.toStorable(value)).append("\"}");
