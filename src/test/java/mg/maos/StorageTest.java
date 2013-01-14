@@ -207,6 +207,7 @@ public class StorageTest {
 		
 		results = storage.find();
 		Assert.assertEquals(4, results.getResults().size());
+		Assert.assertEquals(4L, results.getTotal());
 		
 		results = storage.find(0, 2, null);
 		Assert.assertEquals(2, results.getResults().size());

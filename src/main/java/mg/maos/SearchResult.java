@@ -12,7 +12,7 @@ public class SearchResult {
 	private final Map<String, List<FacetCondition>> facets;
 	private final long total;
 	
-	protected long getTotal() {
+	public long getTotal() {
 		return total;
 	}
 
