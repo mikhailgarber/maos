@@ -8,7 +8,6 @@ import java.util.List;
 
 import mg.maos.SearchCondition.OPERATION;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
