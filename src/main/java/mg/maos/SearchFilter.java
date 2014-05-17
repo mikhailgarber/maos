@@ -5,6 +5,7 @@ import java.util.List;
 
 public class SearchFilter {
 	private List<SearchCondition> conditions = new ArrayList<SearchCondition>();
+	
 	public SearchFilter add(SearchCondition condition) {
 		conditions.add(condition);
 		return this;
@@ -14,6 +15,10 @@ public class SearchFilter {
 		return this;
 	}
 	
+	
+	public List<SearchCondition> getConditions() {
+		return conditions;
+	}
 	protected String toQuery() {
 		StringBuffer sb = new StringBuffer();
 		for(SearchCondition condition : conditions) {

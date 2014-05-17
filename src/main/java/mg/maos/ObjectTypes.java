@@ -22,11 +22,11 @@ public class ObjectTypes {
 		super();
 	}
 
-	protected static void validateType(Object value) {
+	public static void validateType(Object value) {
 		validateType(value, false);
 	}
 	
-	protected static void validateType(Object value, boolean isFacet) {
+	public static void validateType(Object value, boolean isFacet) {
 		if (value == null)
 			throw new IllegalArgumentException("null value is provided");
 		String type = value.getClass().getName();
@@ -36,13 +36,13 @@ public class ObjectTypes {
 			throw new IllegalArgumentException("faceting of this type is not supported");
 	}
 
-	protected static String toStorable(Object o) {
+	public static String toStorable(Object o) {
 		int pos = getPos(o.getClass().getName());
 		ToStorableInterface converter = CONVERTERS.get(pos);
 		return converter.toStorable(o);
 	}
 	
-	protected static Object fromStorable(String s, String type) {
+	public static Object fromStorable(String s, String type) {
 		int pos = getPos(type);
 		ToStorableInterface converter = CONVERTERS.get(pos);
 		return converter.fromStorable(s);

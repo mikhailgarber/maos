@@ -3,7 +3,7 @@ package mg.maos;
 public class StoredObject {
 	
 	
-	protected StoredObject(String id) {
+	public StoredObject(String id) {
 		super();
 		this.id = id;
 	}

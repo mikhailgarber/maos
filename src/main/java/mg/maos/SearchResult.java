@@ -16,7 +16,7 @@ public class SearchResult {
 		return total;
 	}
 
-	protected SearchResult(int howmany, int offset, List<StoredObject> results, Map<String, List<FacetCondition>> facets, long total) {
+	public SearchResult(int howmany, int offset, List<StoredObject> results, Map<String, List<FacetCondition>> facets, long total) {
 		super();
 		this.howmany = howmany;
 		this.offset = offset;

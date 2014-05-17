@@ -36,23 +36,23 @@ public class SearchRequest {
 		return this;
 	}
 
-	protected int getOffset() {
+	public int getOffset() {
 		return offset;
 	}
 
-	protected int getHowmany() {
+	public int getHowmany() {
 		return howmany;
 	}
 
-	protected SortCondition getSort() {
+	public SortCondition getSort() {
 		return sort;
 	}
 
-	protected List<SearchFilter> getFilters() {
+	public List<SearchFilter> getFilters() {
 		return filters;
 	}
 
-	protected List<FacetCondition> getFacets() {
+	public List<FacetCondition> getFacets() {
 		return facets;
 	}
 	
