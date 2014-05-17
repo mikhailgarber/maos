@@ -1,6 +1,6 @@
 package mg.maos;
 
-import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,17 +8,20 @@ import java.util.List;
 
 import mg.maos.SearchCondition.OPERATION;
 
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StorageTest {
+public abstract class StorageTest {
+
+	
+	protected abstract StorageServiceInterface getStorageWithFacets();
+	protected abstract StorageServiceInterface getStorage();
+	protected abstract StorageServiceInterface getStorageForFind() throws IOException;
 
 	@Test
 	public void testBulk() {
-		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory(), new RAMDirectory());
+		StorageServiceInterface storage = getStorageWithFacets();
 		ObjectAttributes attrs1 = new ObjectAttributes();
 		attrs1.add("Name", "John Doe");
 		attrs1.add("Age", new Long(43));
@@ -41,10 +44,13 @@ public class StorageTest {
 		Assert.assertEquals(17L, jane.getAttributes().get("Age"));
 	}
 	
+	
+	
+
 	@Test
 	public void testCRUD() {
 
-		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory());
+		StorageServiceInterface storage = getStorage();
 		Assert.assertEquals(0, storage.getCount());
 
 		
@@ -94,7 +100,7 @@ public class StorageTest {
 
 	@Test
 	public void testFacets() throws ParseException {
-		StorageServiceInterface storage = new LuceneStorage(new RAMDirectory(), new RAMDirectory());
+		StorageServiceInterface storage = getStorageWithFacets();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		addPlace(storage, "Seattle", sdf.parse("2006/04/20"), 1224354L, 23.7);
 		addPlace(storage, "Frankfurt", sdf.parse("1996/01/06"), 7224354L, 33.7);
@@ -126,15 +132,12 @@ public class StorageTest {
 		System.out.println("fscets:" + results.getFacets());
 	}
 	
-	@After
-	public void after() {
-		deleteDir(getTestDirLocation());
-	}
+	
 	
 	
 	@Test
 	public void testFind() throws Exception {
-		StorageServiceInterface storage = new LuceneStorage(new SimpleFSDirectory(getTestDirLocation()));
+		StorageServiceInterface storage = getStorageForFind();
 		
 		// empty directory
 		Assert.assertEquals(0, storage.getCount());
@@ -247,19 +250,6 @@ public class StorageTest {
 		results = storage.find(new SearchFilter().add(new SearchCondition(7224354L)));
 		Assert.assertEquals(0, results.getResults().size());
 		
-	}
-
-	private File getTestDirLocation() {
-		return new File(System.getProperty("temp.dir") + "/dir");
-	}
-	
-	private void deleteDir(File dir) {
-		if(dir.isDirectory()) {
-			for(File f : dir.listFiles()) {
-				deleteDir(f);
-			}
-		}
-		dir.delete();
 	}
 
 	private void addPlace(StorageServiceInterface storage, String name, Date visited, Long population, Double distance) {
