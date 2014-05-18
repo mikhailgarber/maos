@@ -279,7 +279,7 @@ public class LuceneStorage implements StorageServiceInterface {
 			}
 			if (sb.length() > 0)
 				sb.append(" OR ");
-			sb.append("(").append(filter.toQuery()).append(")");
+			sb.append("(").append(toQuery(filter)).append(")");
 		}
 		return (sb.length() == 0) ? ID_FIELD + ":0* 1* 2* 3* 4* 5* 6* 7* 8* 9* a* b* c* d* e* f*" : sb.toString();
 	}
@@ -461,6 +461,41 @@ public class LuceneStorage implements StorageServiceInterface {
 		} else {
 			return result;
 		}
+	}
+	
+	private String toQuery(SearchCondition sc) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(sc.getName());
+		switch(sc.getOperation()) {
+		case EQ:
+			sb.append(":\"").append(ObjectTypes.toStorable(sc.getValue())).append("\"");
+			break;
+		case LIKE:
+			sb.append(":").append(ObjectTypes.toStorable(sc.getValue())).append("*");
+			break;
+		case LT:
+			sb.append(":{* TO \"").append(ObjectTypes.toStorable(sc.getValue())).append("\"}");
+			break;
+		case LE:
+			sb.append(":[* TO \"").append(ObjectTypes.toStorable(sc.getValue())).append("\"]");
+			break;
+		case GT:
+			sb.append(":{\"").append(ObjectTypes.toStorable(sc.getValue())).append("\" TO *}");
+			break;
+		case GE:
+			sb.append(":[\"").append(ObjectTypes.toStorable(sc.getValue())).append("\" TO *]");
+			break;
+		}
+		return sb.toString();
+	}
+	
+	protected String toQuery(SearchFilter filter) {
+		StringBuffer sb = new StringBuffer();
+		for(SearchCondition condition : filter.getConditions()) {
+			if(sb.length() > 0) sb.append(" AND ");
+			sb.append(" (").append(toQuery(condition)).append(") ");
+		}
+		return sb.toString();
 	}
 
 }

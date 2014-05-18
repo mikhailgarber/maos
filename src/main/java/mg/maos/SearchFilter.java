@@ -19,14 +19,7 @@ public class SearchFilter {
 	public List<SearchCondition> getConditions() {
 		return conditions;
 	}
-	protected String toQuery() {
-		StringBuffer sb = new StringBuffer();
-		for(SearchCondition condition : conditions) {
-			if(sb.length() > 0) sb.append(" AND ");
-			sb.append(" (").append(condition.toQuery()).append(") ");
-		}
-		return sb.toString();
-	}
+	
 	
 	public boolean isEmpty() {
 		return conditions.isEmpty();

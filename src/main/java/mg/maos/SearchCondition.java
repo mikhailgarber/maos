@@ -7,7 +7,7 @@ public class SearchCondition {
 	private final String name;
 	private final Object value;
 	private final OPERATION operation;
-	protected static final String DEFAULT_FIELD = "alltext";
+	public static final String DEFAULT_FIELD = "alltext";
 	
 	public SearchCondition(String name, Object value, OPERATION operation) {
 		super();
@@ -38,31 +38,7 @@ public class SearchCondition {
 		return operation;
 	}
 	
-	protected String toQuery() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(name);
-		switch(operation) {
-		case EQ:
-			sb.append(":\"").append(ObjectTypes.toStorable(value)).append("\"");
-			break;
-		case LIKE:
-			sb.append(":").append(ObjectTypes.toStorable(value)).append("*");
-			break;
-		case LT:
-			sb.append(":{* TO \"").append(ObjectTypes.toStorable(value)).append("\"}");
-			break;
-		case LE:
-			sb.append(":[* TO \"").append(ObjectTypes.toStorable(value)).append("\"]");
-			break;
-		case GT:
-			sb.append(":{\"").append(ObjectTypes.toStorable(value)).append("\" TO *}");
-			break;
-		case GE:
-			sb.append(":[\"").append(ObjectTypes.toStorable(value)).append("\" TO *]");
-			break;
-		}
-		return sb.toString();
-	}
+	
 
 	@Override
 	public String toString() {
