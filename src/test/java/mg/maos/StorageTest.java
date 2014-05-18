@@ -243,7 +243,9 @@ public abstract class StorageTest {
 		Assert.assertEquals("Detroit", results.getResults().get(0).getAttributes().get("Name"));
 		
 		
-		// delete
+		// delete w/o property name
+		results = storage.find(new SearchFilter().add(new SearchCondition(7224354L)));
+		Assert.assertEquals(2, results.getResults().size());
 		
 		storage.delete(new SearchFilter().add(new SearchCondition(7224354L)));
 		results = storage.find(new SearchFilter().add(new SearchCondition(7224354L)));

@@ -489,7 +489,7 @@ public class LuceneStorage implements StorageServiceInterface {
 		return sb.toString();
 	}
 	
-	protected String toQuery(SearchFilter filter) {
+	private String toQuery(SearchFilter filter) {
 		StringBuffer sb = new StringBuffer();
 		for(SearchCondition condition : filter.getConditions()) {
 			if(sb.length() > 0) sb.append(" AND ");
